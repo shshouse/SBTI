@@ -39,14 +39,17 @@ function handleBack() {
 
     <!-- Questions -->
     <div class="space-y-4">
-      <QuestionCard
-        v-for="(q, i) in store.visibleQuestions"
-        :key="q.id"
-        :question="q"
-        :index="i"
-        :selected-value="store.answers[q.id]"
-        @select="handleSelect"
-      />
+      <TransitionGroup name="question-list" appear>
+        <QuestionCard
+          v-for="(q, i) in store.visibleQuestions"
+          :key="q.id"
+          :question="q"
+          :index="i"
+          :selected-value="store.answers[q.id]"
+          :style="{ '--delay': `${Math.min(i * 40, 800)}ms` }"
+          @select="handleSelect"
+        />
+      </TransitionGroup>
     </div>
 
     <!-- Bottom actions -->
@@ -76,3 +79,21 @@ function handleBack() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.question-list-enter-active {
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition-delay: var(--delay, 0ms);
+}
+.question-list-enter-from {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.question-list-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.question-list-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+</style>

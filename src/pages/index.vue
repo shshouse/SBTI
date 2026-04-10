@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useTestStore } from '~/stores/test'
+import { useHistory } from '~/composables/useHistory'
 
 const router = useRouter()
 const store = useTestStore()
+const { records } = useHistory()
 
 function handleStart() {
   store.startTest()
@@ -14,7 +16,7 @@ function handleStart() {
   <div class="min-h-screen flex flex-col items-center justify-center px-4 py-12">
     <div class="w-full max-w-2xl text-center">
       <!-- Hero -->
-      <div class="card px-8 py-16 relative overflow-hidden">
+      <div class="card px-8 py-16 relative overflow-hidden fade-up" style="--delay: 0ms">
         <!-- Decorative circles -->
         <div class="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-gradient-to-b from-primary-100/40 to-primary-50/10 pointer-events-none" />
         <div class="absolute -left-12 -bottom-12 w-36 h-36 rounded-full bg-gradient-to-t from-primary-100/30 to-transparent pointer-events-none" />
@@ -34,15 +36,25 @@ function handleStart() {
             一次不那么正经的人格审判
           </p>
 
-          <button class="btn-primary text-base px-8 py-4" @click="handleStart">
-            <Icon name="lucide:play" class="w-4 h-4 mr-2" />
-            开始测试
-          </button>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button class="btn-primary text-base px-8 py-4" @click="handleStart">
+              <Icon name="lucide:play" class="w-4 h-4 mr-2" />
+              开始测试
+            </button>
+            <button
+              v-if="records.length > 0"
+              class="btn-secondary text-sm px-5 py-3"
+              @click="router.push('/history')"
+            >
+              <Icon name="lucide:clock" class="w-4 h-4 mr-1.5" />
+              历史记录 ({{ records.length }})
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- Info grid -->
-      <div class="grid sm:grid-cols-2 gap-4 mt-6">
+      <div class="grid sm:grid-cols-2 gap-4 mt-6 fade-up" style="--delay: 120ms">
         <div class="card p-5 text-left">
           <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
             <Icon name="lucide:layers" class="w-4 h-4 text-primary-600" />
@@ -72,9 +84,11 @@ function handleStart() {
       </div>
 
       <!-- Footer -->
-      <div class="mt-8 text-xs text-gray-400 space-y-1">
+      <div class="mt-8 text-xs text-gray-400 space-y-1 fade-up" style="--delay: 200ms">
         <p>
           原作者：<a href="https://space.bilibili.com/417038183" target="_blank" class="text-primary-600 hover:underline">B站@蛆肉儿串儿</a>
+          ·
+          改良维护：<a href="https://space.bilibili.com/309820452" target="_blank" class="text-primary-600 hover:underline">B站@shshouse</a>
         </p>
         <p>
           开源地址：<a href="https://github.com/shshouse/SBTI" target="_blank" class="text-primary-600 hover:underline">GitHub</a>
@@ -83,3 +97,20 @@ function handleStart() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.fade-up {
+  animation: fadeUp 0.5s ease both;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>

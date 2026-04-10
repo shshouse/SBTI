@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { useTestStore } from '~/stores/test'
-import { dimensionOrder } from '~/data/dimensions'
 import { modelGroups } from '~/data/dimensions'
 import { typeImages } from '~/data/types'
-import type { DimensionKey } from '~/data/dimensions'
+import { useHistory } from '~/composables/useHistory'
 
 const router = useRouter()
 const store = useTestStore()
+const { addRecord } = useHistory()
 
 if (!store.result) {
   router.replace('/')
@@ -15,6 +15,13 @@ if (!store.result) {
 const result = computed(() => store.result)
 const typeCode = computed(() => result.value?.finalType.code ?? '')
 const imageSrc = computed(() => typeImages[typeCode.value] || '')
+const showShareModal = ref(false)
+
+onMounted(() => {
+  if (store.result) {
+    addRecord(store.result)
+  }
+})
 
 function handleRestart() {
   store.startTest()
@@ -30,7 +37,7 @@ function handleHome() {
 <template>
   <div v-if="result" class="max-w-3xl mx-auto px-4 py-8 pb-16">
     <!-- Type header -->
-    <div class="card overflow-hidden">
+    <div class="card overflow-hidden fade-up" style="--delay: 0ms">
       <div class="grid sm:grid-cols-2 gap-0">
         <!-- Image -->
         <div v-if="imageSrc" class="relative bg-gradient-to-br from-white to-primary-50/40 p-6 flex items-center justify-center min-h-[240px]">
@@ -63,14 +70,14 @@ function handleHome() {
     </div>
 
     <!-- Intro quote -->
-    <div class="card p-5 mt-4 text-center">
+    <div class="card p-5 mt-4 text-center fade-up" style="--delay: 80ms">
       <p class="text-base text-gray-600 italic">
         "{{ result.finalType.intro }}"
       </p>
     </div>
 
     <!-- Description -->
-    <div class="card p-6 mt-4">
+    <div class="card p-6 mt-4 fade-up" style="--delay: 160ms">
       <h3 class="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
         <Icon name="lucide:file-text" class="w-4 h-4 text-primary-600" />
         该人格的简单解读
@@ -80,8 +87,19 @@ function handleHome() {
       </p>
     </div>
 
+    <!-- Radar Chart -->
+    <div class="card p-6 mt-4 fade-up" style="--delay: 240ms">
+      <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <Icon name="lucide:radar" class="w-4 h-4 text-primary-600" />
+        维度雷达图
+      </h3>
+      <ClientOnly>
+        <RadarChart :raw-scores="result.rawScores" />
+      </ClientOnly>
+    </div>
+
     <!-- Dimensions -->
-    <div class="card p-6 mt-4">
+    <div class="card p-6 mt-4 fade-up" style="--delay: 320ms">
       <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <Icon name="lucide:bar-chart-3" class="w-4 h-4 text-primary-600" />
         十五维度评分
@@ -104,8 +122,17 @@ function handleHome() {
       </div>
     </div>
 
+    <!-- Share -->
+    <div class="card p-6 mt-4 fade-up" style="--delay: 400ms">
+      <h3 class="text-sm font-semibold text-gray-800 mb-4 flex items-center gap-2">
+        <Icon name="lucide:share-2" class="w-4 h-4 text-primary-600" />
+        分享结果
+      </h3>
+      <ShareCard :result="result" />
+    </div>
+
     <!-- Note -->
-    <div class="card p-5 mt-4">
+    <div class="card p-5 mt-4 fade-up" style="--delay: 480ms">
       <h3 class="text-sm font-semibold text-gray-800 mb-2 flex items-center gap-2">
         <Icon name="lucide:alert-circle" class="w-4 h-4 text-amber-500" />
         友情提示
@@ -144,15 +171,38 @@ function handleHome() {
     </details>
 
     <!-- Actions -->
-    <div class="flex items-center justify-end gap-3 mt-6">
+    <div class="flex items-center justify-between gap-3 mt-6 fade-up" style="--delay: 560ms">
+      <button class="btn-secondary text-sm" @click="router.push('/history')">
+        <Icon name="lucide:clock" class="w-4 h-4 mr-1.5" />
+        历史记录
+      </button>
+      <div class="flex gap-3">
       <button class="btn-secondary text-sm" @click="handleRestart">
         <Icon name="lucide:rotate-ccw" class="w-4 h-4 mr-1.5" />
         重新测试
       </button>
-      <button class="btn-primary text-sm" @click="handleHome">
-        <Icon name="lucide:home" class="w-4 h-4 mr-1.5" />
-        回到首页
-      </button>
+        <button class="btn-primary text-sm" @click="handleHome">
+          <Icon name="lucide:home" class="w-4 h-4 mr-1.5" />
+          回到首页
+        </button>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.fade-up {
+  animation: fadeUp 0.5s ease both;
+  animation-delay: var(--delay, 0ms);
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
