@@ -1,0 +1,30 @@
+{
+  "name": "sbti",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "description": "SBTI Personality Test - A satirical personality assessment inspired by MBTI",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shshouse/SBTI.git"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^3.16.0",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "pinia": "^2.3.0",
+    "@pinia/nuxt": "^0.9.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.13.1",
+    "@nuxt/icon": "^1.10.3",
+    "typescript": "^5.7.0"
+  }
+}
